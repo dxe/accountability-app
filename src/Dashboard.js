@@ -3,6 +3,8 @@ import { Link } from "react-router-dom";
 import moment from "moment";
 import "./App.css";
 import { config } from './config'
+import Loader from 'react-loader-spinner'
+import "react-loader-spinner/dist/loader/css/react-spinner-loader.css"
 
 class Dashboard extends React.Component {
   constructor(props) {
@@ -34,21 +36,29 @@ class Dashboard extends React.Component {
 
   async componentDidMount() {
     await this.setState({ loading: true });
-    console.log(this.state);
+    //console.log(this.state);
 
     const dashboardData = await this.getDashboardData();
     this.setState({
       data: dashboardData,
       loading: false
     });
-    console.log(this.state);
+    //console.log(this.state);
   }
 
   render() {
     if (this.state.loading) {
       return (
         <div className="App">
-          <div className="App-wrapper"></div>
+          <div className="App-wrapper">
+            <Loader
+              type="Circles"
+              color="#00BFFF"
+              height={100}
+              width={100}
+              timeout={5000} //3 secs
+            />
+          </div>
         </div>
       );
     }

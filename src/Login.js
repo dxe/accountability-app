@@ -38,7 +38,7 @@ class Login extends React.Component {
     // TODO: store the token in local storage
     if (json.token) {
       console.log("Valid!");
-      console.log(json.token);
+      //console.log(json.token);
       await asyncLocalStorage.setItem("dxeAccountability", json.token);
       // set state.loggedIn to redirect to main page
       this.setState({ loggedIn: true });

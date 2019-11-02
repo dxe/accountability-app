@@ -120,7 +120,7 @@ class App extends React.Component {
 
     // update the state
     await this.setState({ data: newData });
-    console.log(this.state);
+    //console.log(this.state);
 
     // if it's a new day, we need to update the state
     const actualCurrentDate = moment(new Date()).format("YYYY-MM-DD");
@@ -135,7 +135,7 @@ class App extends React.Component {
           .add(-1, "days")
           .format("YYYY-MM-DD")
       });
-      console.log(this.state);
+      //console.log(this.state);
       // lazy way to reconstruct the page using new dates
       this.componentDidMount();
     }
@@ -148,13 +148,13 @@ class App extends React.Component {
 
     // update the state with the new selectedUser
     await this.setState({ selectedUser: id });
-    console.log(this.state);
+    //console.log(this.state);
 
     // get the selected user's accomplishment data
     try {
       const dataJson = await this.getAccomplishments();
       await this.setState({ data: dataJson, loading: false });
-      console.log(this.state);
+      //console.log(this.state);
     } catch (err) {
       alert(`Failed to get data for selected user: ${err}`);
     }
@@ -191,7 +191,7 @@ class App extends React.Component {
       (await asyncLocalStorage.getItem("dxeAccountability")) || "none";
 
     await this.setState({ loading: true, token: token });
-    console.log(this.state);
+    //console.log(this.state);
     if (this.state.token === "none") return;
 
     try {
@@ -221,7 +221,7 @@ class App extends React.Component {
         loggedInUser: usersJson.currentUser
       });
 
-      console.log(this.state);
+      //console.log(this.state);
 
       const dataJson = await this.getAccomplishments();
 
@@ -232,13 +232,13 @@ class App extends React.Component {
         loading: false
       });
 
-      console.log(this.state);
+      //console.log(this.state);
     } catch (err) {
       // if we get an error, then token is probably invalid, so just redirect to login page
       alert("Please login again.");
       //alert(`Failed to get users or data: ${err}`)
       this.setState({ token: "none" });
-      console.log(this.state);
+      //console.log(this.state);
     }
   }
 

@@ -2,6 +2,7 @@ import React from "react";
 import "./App.css";
 import GoogleLogin from "react-google-login";
 import { Redirect } from "react-router-dom";
+import { config } from './config'
 
 // manage oauth creds here: https://console.developers.google.com/apis/credentials?project=stakeholders-accountability&organizationId=351974971548
 
@@ -25,7 +26,7 @@ class Login extends React.Component {
     console.log(`Thank you, ${res.profileObj.givenName}`);
 
     // pass token to our api to make sure it's valid
-    const auth = await fetch("http://localhost:3000/users/auth", {
+    const auth = await fetch(config.url.API_URL + "/users/auth", {
       method: "POST",
       body: JSON.stringify({ token: res.tokenObj.id_token }),
       headers: {

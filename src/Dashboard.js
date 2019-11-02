@@ -2,6 +2,7 @@ import React from "react";
 import { Link } from "react-router-dom";
 import moment from "moment";
 import "./App.css";
+import { config } from './config'
 
 class Dashboard extends React.Component {
   constructor(props) {
@@ -20,7 +21,7 @@ class Dashboard extends React.Component {
 
   async getDashboardData() {
     const res = await fetch(
-      `http://localhost:3000/accomplishments/dashboard?start_date=${this.state.twoWeeksAgo}&end_date=${this.state.yesterday}`,
+      config.url.API_URL + `/accomplishments/dashboard?start_date=${this.state.twoWeeksAgo}&end_date=${this.state.yesterday}`,
       {
         headers: {
           "Content-type": "application/json; charset=UTF-8",

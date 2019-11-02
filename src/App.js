@@ -3,6 +3,7 @@ import { Link, Redirect } from "react-router-dom";
 import { Offline } from "react-detect-offline";
 import TextareaAutosize from "react-autosize-textarea";
 import moment from "moment";
+import { config } from './config'
 
 import "./App.css";
 
@@ -94,7 +95,7 @@ class App extends React.Component {
 
     // send api requests
 
-    fetch("http://localhost:3000/accomplishments/", {
+    fetch(config.url.API_URL + "/accomplishments/", {
       method: "PUT",
       body: reqBody,
       headers: {
@@ -160,7 +161,7 @@ class App extends React.Component {
   }
 
   async getUsers() {
-    const res = await fetch(`http://localhost:3000/users`, {
+    const res = await fetch(config.url.API_URL + "/users", {
       headers: {
         "Content-type": "application/json; charset=UTF-8",
         Authorization: this.state.token
@@ -171,7 +172,7 @@ class App extends React.Component {
 
   async getAccomplishments() {
     const res = await fetch(
-      `http://localhost:3000/accomplishments/?start_date=${this.state.twoWeeksAgo}&end_date=${this.state.today}&user=${this.state.selectedUser}`,
+      config.url.API_URL + `/accomplishments/?start_date=${this.state.twoWeeksAgo}&end_date=${this.state.today}&user=${this.state.selectedUser}`,
       {
         headers: {
           "Content-type": "application/json; charset=UTF-8",

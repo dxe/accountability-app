@@ -50,6 +50,12 @@ td {
   text-align: center;
 }
 
+@media screen and (max-width: 1000px) {
+  .hideOnMobile {
+    display:none;
+  }
+}
+
 /* select-css class adapted from: https://www.filamentgroup.com/lab/select-css.html */
 .select-css {
   display: block;

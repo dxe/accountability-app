@@ -56,7 +56,7 @@ class Dashboard extends React.Component {
               color="#00BFFF"
               height={100}
               width={100}
-              timeout={5000} //3 secs
+              timeout={15000} // 15 sec
             />
           </div>
         </div>
@@ -66,7 +66,7 @@ class Dashboard extends React.Component {
     return (
       <div className="App">
         <div className="App-wrapper">
-          <div id="dashboard-wrapper">
+          <div class="dashboard-wrapper">
             <table>
               <tbody>
                 {this.state.data.map((user, userIndex) => (

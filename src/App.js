@@ -289,7 +289,7 @@ class App extends React.Component {
             </select>
 
             <div className="nav">
-              <Link to="/dashboard">
+              <Link to="/dashboard" className="hideOnMobile">
                 <small>Dashboard</small>
               </Link>
               <Link to="/login">

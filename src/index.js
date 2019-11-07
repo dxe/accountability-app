@@ -4,9 +4,14 @@ import "./index.css";
 import App from "./App";
 import Dashboard from "./Dashboard";
 import Login from "./Login";
+import Settings from "./Settings";
 import NotFound from "./NotFound";
 import * as serviceWorker from "./serviceWorker";
 import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
+
+// set background color from local storage
+const color = (localStorage.getItem("backgroundColor")) || "#5900b3";
+document.body.style = ('background:' + color + ';');
 
 const routing = (
   <Router>
@@ -14,6 +19,7 @@ const routing = (
       <Route exact path="/" component={App} />
       <Route path="/dashboard" component={Dashboard} />
       <Route path="/login" component={Login} />
+      <Route path="/settings" component={Settings} />
       <Route component={NotFound} />
     </Switch>
   </Router>

@@ -3,16 +3,9 @@ import "./App.css";
 import GoogleLogin from "react-google-login";
 import { Redirect } from "react-router-dom";
 import { config } from './config'
+import { asyncLocalStorage } from './helpers'
 
 // manage oauth creds here: https://console.developers.google.com/apis/credentials?project=stakeholders-accountability&organizationId=351974971548
-
-const asyncLocalStorage = {
-  setItem: function(key, value) {
-    return Promise.resolve().then(function() {
-      localStorage.setItem(key, value);
-    });
-  }
-};
 
 class Login extends React.Component {
   constructor(props) {
@@ -25,7 +18,7 @@ class Login extends React.Component {
   responseGoogle = async res => {
     console.log(`Thank you, ${res.profileObj.givenName}`);
 
-    // pass token to our api to make sure it's valid
+    // pass token to our api to make sure it's a valid user
     const auth = await fetch(config.url.API_URL + "/users/auth", {
       method: "POST",
       body: JSON.stringify({ token: res.tokenObj.id_token }),
@@ -35,11 +28,14 @@ class Login extends React.Component {
     });
     const json = await auth.json();
 
-    // TODO: store the token in local storage
+    // store the token in local storage
     if (json.token) {
       console.log("Valid!");
-      //console.log(json.token);
-      await asyncLocalStorage.setItem("dxeAccountability", json.token);
+      //console.log(json);
+      await asyncLocalStorage.setItem("token", json.token);
+      // read background color from database & set it
+      localStorage.setItem("backgroundColor", json.backgroundColor);
+      document.body.style = ('background:' + json.backgroundColor + ';');
       // set state.loggedIn to redirect to main page
       this.setState({ loggedIn: true });
     } else {
@@ -54,7 +50,7 @@ class Login extends React.Component {
     }
 
     // clear local storage whenever login page is visited
-    localStorage.removeItem("dxeAccountability");
+    localStorage.removeItem("token");
 
     return (
       <div className="App">

@@ -4,16 +4,9 @@ import { Offline } from "react-detect-offline";
 import TextareaAutosize from "react-autosize-textarea";
 import moment from "moment";
 import { config } from './config'
+import { asyncLocalStorage } from './helpers'
 
 import "./App.css";
-
-const asyncLocalStorage = {
-  getItem: function(key) {
-    return Promise.resolve().then(function() {
-      return localStorage.getItem(key);
-    });
-  }
-};
 
 const Accomplishment = props => (
   <div className="accomplishment">
@@ -44,6 +37,7 @@ class App extends React.Component {
       users: [],
       selectedUser: "",
       loggedInUser: {},
+      currentHour: moment(new Date()).format('HH'),
       today: moment(new Date()).format("YYYY-MM-DD"),
       twoWeeksAgo: moment(new Date())
         .add(-14, "days")
@@ -116,6 +110,9 @@ class App extends React.Component {
           // set the new id in the data for the state
           newData[objIndex]._id = json._id;
         }
+      }).catch(err => {
+        console.log("Error saving data!");
+        alert("Sorry, there was an error saving your data! Please contact support.");
       });
 
     // update the state
@@ -142,7 +139,7 @@ class App extends React.Component {
   }
 
   async handleUserChange(id) {
-    await this.setState({ loading: true });
+    // don't set loading to true b/c it makes the page look too jumpy
 
     console.log(`Selected user changed: ${id}`);
 
@@ -153,7 +150,7 @@ class App extends React.Component {
     // get the selected user's accomplishment data
     try {
       const dataJson = await this.getAccomplishments();
-      await this.setState({ data: dataJson, loading: false });
+      await this.setState({ data: dataJson });
       //console.log(this.state);
     } catch (err) {
       alert(`Failed to get data for selected user: ${err}`);
@@ -184,35 +181,12 @@ class App extends React.Component {
   }
 
   async componentDidMount() {
-    // TODO: verify token is valid with server before making other calls to get data,
-    // then if not valid or expired, send to login page
-
-    const token =
-      (await asyncLocalStorage.getItem("dxeAccountability")) || "none";
-
+    const token = (await asyncLocalStorage.getItem("token")) || "none";
+    // if token = none in state, then they will be send back to login page
     await this.setState({ loading: true, token: token });
-    //console.log(this.state);
     if (this.state.token === "none") return;
 
     try {
-      // we have to get users BEFORE the other data (not at same time)
-      // otherwise, we won't know who the selected user is.
-      // maybe we can go back to getting all of the data at once like this
-      // after we are doing a separate 1st call to validate user?
-      //
-      // Promise.all([this.getUsers(), this.getAccomplishments()])
-      // .then(([usersJson, dataJson]) => {
-      //   this.setState({ , , , data: dataJson, loading: false })
-      //   console.log(this.state)
-      // })
-      // .catch(err => {
-      //   // if we get an error, then token is probably invalid, so redirect to login page
-      //   alert("Please login again.")
-      //   //alert(`Failed to get users or data: ${err}`)
-      //   this.setState({ token: "none" })
-      //   console.log(this.state)
-      // });
-
       const usersJson = await this.getUsers();
 
       this.setState({
@@ -220,8 +194,6 @@ class App extends React.Component {
         selectedUser: usersJson.currentUser.id,
         loggedInUser: usersJson.currentUser
       });
-
-      //console.log(this.state);
 
       const dataJson = await this.getAccomplishments();
 
@@ -232,13 +204,10 @@ class App extends React.Component {
         loading: false
       });
 
-      //console.log(this.state);
     } catch (err) {
       // if we get an error, then token is probably invalid, so just redirect to login page
-      alert("Please login again.");
-      //alert(`Failed to get users or data: ${err}`)
+      alert("Error getting data. Please login again. If the error persists, please contact support.");
       this.setState({ token: "none" });
-      //console.log(this.state);
     }
   }
 
@@ -257,7 +226,15 @@ class App extends React.Component {
 
     const greeting =
       this.state.selectedUser === this.state.loggedInUser.id ? (
-        <p>Hello, {this.state.loggedInUser.firstName}.</p>
+        <p>
+          {
+            this.state.currentHour >= 5 && this.state.currentHour <= 11 ? ("Good morning")
+            : this.state.currentHour >= 12 && this.state.currentHour <= 16 ? ("Good afternoon")
+            : this.state.currentHour >= 17 && this.state.currentHour <= 23 ? ("Good evening")
+            : "Hello"
+          }
+          , {this.state.loggedInUser.firstName}.
+        </p>
       ) : (
         <p></p>
       );
@@ -289,8 +266,11 @@ class App extends React.Component {
             </select>
 
             <div className="nav">
-              <Link to="/dashboard" className="hideOnMobile">
+              <Link to="/dashboard">
                 <small>Dashboard</small>
+              </Link>
+              <Link to="/settings">
+                <small>Settings</small>
               </Link>
               <Link to="/login">
                 <small>Logout</small>

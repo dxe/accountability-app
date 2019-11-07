@@ -6,7 +6,7 @@ class NotFound extends React.Component {
     return (
       <div className="App">
         <div className="App-wrapper">
-          <div id="dashboard-wrapper">404: Page not found!</div>
+          <div id="dashboard-wrapper">404: Page not found</div>
         </div>
       </div>
     );

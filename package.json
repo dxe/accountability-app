@@ -3,6 +3,8 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "debounce-async": "0.0.2",
+    "lodash": "^4.17.15",
     "moment": "^2.24.0",
     "react": "^16.11.0",
     "react-autosize-textarea": "^7.0.0",

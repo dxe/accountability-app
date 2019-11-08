@@ -33,6 +33,7 @@ class App extends React.Component {
     super(props);
     this.state = {
       loading: false,
+      isSaved: false,
       data: [],
       users: [],
       selectedUser: "",
@@ -46,9 +47,11 @@ class App extends React.Component {
         .add(-1, "days")
         .format("YYYY-MM-DD")
     };
+    this.timeout = null
   }
 
   async handleChange(id, date, event) {
+
     // if loggedInUser is not the selected user, then don't allow any changes
     if (this.state.loggedInUser.id !== this.state.selectedUser)
       return alert(
@@ -61,11 +64,61 @@ class App extends React.Component {
         "Sorry, you may not edit your accomplishments from dates prior to yesterday."
       );
 
-    // copy the state to a new variable to modify
+    // copy the data from state to a new variable to modify
     let newData = [...this.state.data];
     let reqBody;
 
-    if (!id) {
+    this.setState({isSaved: false});
+
+    if (id) {
+
+      // id was provided, so first find index in the array
+      let objIndex = newData.findIndex(obj => obj._id === id);
+      newData[objIndex].text = event.target.value;
+
+      // We will only make calls to server to save data
+      // after timeout has passed so the server doesn't
+      // get flood with calls for every keystroke.
+
+      // clear timeout to restart the counter
+      if (this.timeout) { clearTimeout(this.timeout) };
+      // keep the event around so our callback can access it
+      event.persist()
+      // make ajax call after timeout if not cancelled by another event
+      this.timeout = setTimeout( ()  => {
+
+        // prepare api request body
+        reqBody = JSON.stringify({
+          id: id,
+          text: event.target.value
+        });
+
+        // make ajax call to update
+        fetch(config.url.API_URL + "/accomplishments/", {
+          method: "PUT",
+          body: reqBody,
+          headers: {
+            "Content-type": "application/json; charset=UTF-8",
+            Authorization: this.state.token
+          }
+        })
+          .then(response => {
+            return response.json();
+          })
+          .then(json => {
+            console.log("Updated existing accomplishment.")
+            console.log(json)
+            this.setState({isSaved: true});
+          })
+          .catch(err => {
+            console.log("Error saving data!");
+            alert("Sorry, there was an error saving your data! Please contact support.");
+          });
+
+      }, 400);
+
+
+    } else {
       // no id provided from database, so we need to find the object in the state using its date
       let objIndex = newData.findIndex(obj => obj.date === date);
       newData[objIndex].text = event.target.value;
@@ -76,44 +129,30 @@ class App extends React.Component {
         user: this.state.selectedUser,
         date: date
       });
-    } else {
-      // find index in the array
-      let objIndex = newData.findIndex(obj => obj._id === id);
-      newData[objIndex].text = event.target.value;
-      // prepare api request body
-      reqBody = JSON.stringify({
-        id: id,
-        text: event.target.value
-      });
-    }
 
-    // send api requests
-
-    fetch(config.url.API_URL + "/accomplishments/", {
-      method: "PUT",
-      body: reqBody,
-      headers: {
-        "Content-type": "application/json; charset=UTF-8",
-        Authorization: this.state.token
-      }
-    })
-      .then(response => {
-        return response.json();
-      })
-      .then(json => {
-        // IF !id, then update object in state to have the newly created id
-        if (!id) {
-          // get index based on date
-          let objIndex = newData.findIndex(
-            obj => obj.date === moment.utc(json.date).format("YYYY-MM-DD")
-          );
-          // set the new id in the data for the state
-          newData[objIndex]._id = json._id;
+      // make ajax call to add new accomplishment to database
+      fetch(config.url.API_URL + "/accomplishments/", {
+        method: "PUT",
+        body: reqBody,
+        headers: {
+          "Content-type": "application/json; charset=UTF-8",
+          Authorization: this.state.token
         }
-      }).catch(err => {
-        console.log("Error saving data!");
-        alert("Sorry, there was an error saving your data! Please contact support.");
-      });
+      })
+        .then(response => {
+          return response.json();
+        })
+        .then(json => {
+            console.log("Created new accomplishment.")
+            console.log(json)
+            this.setState({isSaved: true});
+            // set the new id returned from server in the new data for the state
+            newData[objIndex]._id = json._id;
+        }).catch(err => {
+          console.log("Error saving data!");
+          alert("Sorry, there was an error saving your data! Please contact support.");
+        });
+    }
 
     // update the state
     await this.setState({ data: newData });

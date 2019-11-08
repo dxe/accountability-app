@@ -58,6 +58,14 @@ td {
   }
 }
 
+.saving {
+  float: right;
+}
+
+.hidden {
+  display: none;
+}
+
 /* select-css class adapted from: https://www.filamentgroup.com/lab/select-css.html */
 .select-css {
   display: block;

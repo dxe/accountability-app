@@ -115,7 +115,6 @@ class App extends React.Component {
           })
           .then(json => {
             console.log("Updated existing accomplishment.")
-            console.log(json)
             this.setState({isSaved: true, lastSaved: json._id});
           })
           .catch(err => {
@@ -152,7 +151,6 @@ class App extends React.Component {
         })
         .then(json => {
             console.log("Created new accomplishment.")
-            console.log(json)
             this.setState({isSaved: true});
             // set the new id returned from server in the new data for the state
             newData[objIndex]._id = json._id;

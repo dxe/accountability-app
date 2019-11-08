@@ -23,6 +23,7 @@ const Accomplishment = props => (
       value={props.data.text}
       onChange={props.onChange}
     />
+    {props.lastSaved === props.data._id && props.allChangesSaved ? (<span className="saved-message">Saved</span>) : ("") }
     <br />
     <br />
   </div>
@@ -34,6 +35,7 @@ class App extends React.Component {
     this.state = {
       loading: false,
       isSaved: false,
+      lastSaved: null,
       data: [],
       users: [],
       selectedUser: "",
@@ -62,6 +64,12 @@ class App extends React.Component {
     if (moment.utc(date).format("YYYY-MM-DD") < this.state.yesterday)
       return alert(
         "Sorry, you may not edit your accomplishments from dates prior to yesterday."
+      );
+
+    // if date is yesterday, then only allow changes it current time is less than 9:30
+    if (moment.utc(date).format("YYYY-MM-DD") === this.state.yesterday && moment(new Date()).format('HHmm') > '0930')
+      return alert(
+        "Sorry, you may not edit yesterday's accomplishments after 9:30am."
       );
 
     // copy the data from state to a new variable to modify
@@ -108,7 +116,7 @@ class App extends React.Component {
           .then(json => {
             console.log("Updated existing accomplishment.")
             console.log(json)
-            this.setState({isSaved: true});
+            this.setState({isSaved: true, lastSaved: json._id});
           })
           .catch(err => {
             console.log("Error saving data!");
@@ -314,6 +322,8 @@ class App extends React.Component {
                 data={data}
                 selectedUser={this.state.selectedUser}
                 loggedInUser={this.state.loggedInUser}
+                lastSaved={this.state.lastSaved}
+                allChangesSaved={this.state.isSaved}
                 onChange={event => {
                   this.handleChange(data._id, data.date, event);
                 }}

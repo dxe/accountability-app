@@ -2,9 +2,7 @@ import React from "react";
 import { Link } from "react-router-dom";
 import moment from "moment";
 import "./App.css";
-import { config } from './config'
-import Loader from 'react-loader-spinner'
-import "react-loader-spinner/dist/loader/css/react-spinner-loader.css"
+import { dashboardStartDate, config } from './config'
 
 
 class Dashboard extends React.Component {
@@ -50,13 +48,7 @@ class Dashboard extends React.Component {
       return (
         <div className="App">
           <div className="App-wrapper">
-            <Loader
-              type="Circles"
-              color="#00BFFF"
-              height={100}
-              width={100}
-              timeout={5000} // 5 sec
-            />
+            Loading...
           </div>
         </div>
       );
@@ -84,7 +76,7 @@ class Dashboard extends React.Component {
                           </span>
                         ) : day.date !== this.state.today ? (
                           <span role="img" aria-label="X">
-                            ❌
+                            {day.date >= dashboardStartDate ? "❌" : ""}
                           </span>
                         ) : <span>⏱</span>}
                       </td>

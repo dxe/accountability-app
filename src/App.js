@@ -117,7 +117,6 @@ class App extends React.Component {
 
     // update the state
     await this.setState({ data: newData });
-    //console.log(this.state);
 
     // if it's a new day, we need to update the state
     const actualCurrentDate = moment(new Date()).format("YYYY-MM-DD");
@@ -132,7 +131,6 @@ class App extends React.Component {
           .add(-1, "days")
           .format("YYYY-MM-DD")
       });
-      //console.log(this.state);
       // lazy way to reconstruct the page using new dates
       this.componentDidMount();
     }
@@ -145,13 +143,11 @@ class App extends React.Component {
 
     // update the state with the new selectedUser
     await this.setState({ selectedUser: id });
-    //console.log(this.state);
 
     // get the selected user's accomplishment data
     try {
       const dataJson = await this.getAccomplishments();
       await this.setState({ data: dataJson });
-      //console.log(this.state);
     } catch (err) {
       alert(`Failed to get data for selected user: ${err}`);
     }
@@ -266,15 +262,9 @@ class App extends React.Component {
             </select>
 
             <div className="nav">
-              <Link to="/dashboard">
-                <small>Dashboard</small>
-              </Link>
-              <Link to="/settings">
-                <small>Settings</small>
-              </Link>
-              <Link to="/login">
-                <small>Logout</small>
-              </Link>
+              <Link to="/dashboard">Dashboard</Link>
+              <Link to="/settings">Settings</Link>
+              <Link to="/login">Logout</Link>
             </div>
 
             {greeting}

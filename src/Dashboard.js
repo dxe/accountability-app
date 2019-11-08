@@ -36,7 +36,6 @@ class Dashboard extends React.Component {
 
   async componentDidMount() {
     await this.setState({ loading: true });
-    //console.log(this.state);
 
     const dashboardData = await this.getDashboardData();
     this.setState({
@@ -44,7 +43,6 @@ class Dashboard extends React.Component {
       numberOfDayShown: dashboardData[0].data.length,
       loading: false
     });
-    console.log(this.state);
   }
 
   render() {
@@ -70,9 +68,7 @@ class Dashboard extends React.Component {
       <div className="App">
         <div className="App-wrapper">
           <div className="dashboard-wrapper">
-          <Link to="/">
-            <small>Go back</small>
-          </Link>
+          <Link to="/" className="nav">Go back</Link>
             <table>
               <tbody>
                 {this.state.data.map((user, userIndex) => (

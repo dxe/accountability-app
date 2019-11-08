@@ -68,9 +68,7 @@ class Settings extends React.Component {
     return (
       <div className="App">
         <div className="App-wrapper">
-          <Link to="/">
-            <small>Go back</small>
-          </Link>
+          <Link to="/" className="nav">Go back</Link>
           <br />
           <CirclePicker
             color={ this.state.backgroundColor }

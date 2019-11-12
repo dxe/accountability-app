@@ -5,6 +5,7 @@ import TextareaAutosize from "react-autosize-textarea";
 import moment from "moment";
 import { config } from './config'
 import { asyncLocalStorage } from './helpers'
+import { Beforeunload } from 'react-beforeunload';
 
 import "./App.css";
 
@@ -34,7 +35,7 @@ class App extends React.Component {
     super(props);
     this.state = {
       loading: false,
-      isSaved: false,
+      isSaved: null,
       lastSaved: null,
       data: [],
       users: [],
@@ -250,6 +251,7 @@ class App extends React.Component {
       alert("Error getting data. Please login again. If the error persists, please contact support.");
       this.setState({ token: "none" });
     }
+
   }
 
   render() {
@@ -260,7 +262,7 @@ class App extends React.Component {
     if (this.state.loading) {
       return (
         <div className="App">
-          <div className="App-wrapper"></div>
+          <div className="App-wrapper">Loading...</div>
         </div>
       );
     }
@@ -282,6 +284,7 @@ class App extends React.Component {
 
     return (
       <div className="App">
+        { this.state.isSaved === false ? (<Beforeunload onBeforeunload={() => "Data is not saved!"} />) : ""}
         <div className="App-wrapper">
           <div className="accomplishments-wrapper">
             <Offline>

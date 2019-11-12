@@ -161,11 +161,9 @@ class App extends React.Component {
           })
           .then(json => {
               console.log("Created new accomplishment.")
+              // set the new id returned from server in the new data for the state
               newData[objIndex]._id = json._id;
               this.setState({data: newData, isSaved: true, lastSaved: json._id});
-              console.log(this.state)
-              // set the new id returned from server in the new data for the state
-              
           }).catch(err => {
             console.log("Error saving data!");
             alert("Sorry, there was an error saving your data! Please contact support.");

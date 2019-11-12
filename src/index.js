@@ -14,7 +14,7 @@ Sentry.init({dsn: "https://0b9bf436351f4d808715372f23bd757f@sentry.io/1817580"})
 
 // set background color from local storage
 const color = (localStorage.getItem("backgroundColor")) || "#5900b3";
-document.body.style = ('background:' + color + ';');
+document.body.style.cssText = ('background:' + color + ';');
 
 const routing = (
   <Router>

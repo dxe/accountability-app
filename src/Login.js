@@ -34,8 +34,8 @@ class Login extends React.Component {
       //console.log(json);
       await asyncLocalStorage.setItem("token", json.token);
       // read background color from database & set it
-      localStorage.setItem("backgroundColor", json.backgroundColor);
-      document.body.style = ('background:' + json.backgroundColor + ';');
+      asyncLocalStorage.setItem("backgroundColor", json.backgroundColor);
+      document.body.style.cssText = ('background:' + json.backgroundColor + ';');
       // set state.loggedIn to redirect to main page
       this.setState({ loggedIn: true });
     } else {

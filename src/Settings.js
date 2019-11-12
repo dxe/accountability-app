@@ -37,7 +37,7 @@ class Settings extends React.Component {
 
   handleChangeComplete = async (color) => {
     // update background on page
-    document.body.style = ('background:' + color.hex + ';');
+    document.body.style.cssText = ('background:' + color.hex + ';');
     // update background color in local storage
     localStorage.setItem("backgroundColor", color.hex);
     // request current user's id from api using token

@@ -73,6 +73,9 @@ class App extends React.Component {
         "Sorry, you may not edit yesterday's accomplishments after 9:30am."
       );
 
+    // keep the event around so our timeout callbacks can access it
+    event.persist()
+
     // copy the data from state to a new variable to modify
     let newData = [...this.state.data];
     let reqBody;
@@ -91,8 +94,7 @@ class App extends React.Component {
 
       // clear timeout to restart the counter
       if (this.timeout) { clearTimeout(this.timeout) };
-      // keep the event around so our callback can access it
-      event.persist()
+      
       // make ajax call after timeout if not cancelled by another event
       this.timeout = setTimeout( ()  => {
 
@@ -116,53 +118,62 @@ class App extends React.Component {
           })
           .then(json => {
             console.log("Updated existing accomplishment.")
-            this.setState({isSaved: true, lastSaved: json._id});
+            this.setState({data: newData, isSaved: true, lastSaved: json._id});
           })
           .catch(err => {
             console.log("Error saving data!");
             alert("Sorry, there was an error saving your data! Please contact support.");
           });
 
-      }, 400);
+      }, 500);
 
 
     } else {
+      // clear timeout to restart the counter
+      if (this.timeout) { clearTimeout(this.timeout) };
+
       // no id provided from database, so we need to find the object in the state using its date
       let objIndex = newData.findIndex(obj => obj.date === date);
       newData[objIndex].text = event.target.value;
-      // prepare api request body
-      reqBody = JSON.stringify({
-        id: null,
-        text: event.target.value,
-        user: this.state.selectedUser,
-        date: date
-      });
 
-      // make ajax call to add new accomplishment to database
-      fetch(config.url.API_URL + "/accomplishments/", {
-        method: "PUT",
-        body: reqBody,
-        headers: {
-          "Content-type": "application/json; charset=UTF-8",
-          Authorization: this.state.token
-        }
-      })
-        .then(response => {
-          return response.json();
-        })
-        .then(json => {
-            console.log("Created new accomplishment.")
-            this.setState({isSaved: true});
-            // set the new id returned from server in the new data for the state
-            newData[objIndex]._id = json._id;
-        }).catch(err => {
-          console.log("Error saving data!");
-          alert("Sorry, there was an error saving your data! Please contact support.");
+      // make ajax call after timeout if not cancelled by another event
+      this.timeout = setTimeout( ()  => {
+
+        // prepare api request body
+        reqBody = JSON.stringify({
+          id: null,
+          text: event.target.value,
+          user: this.state.selectedUser,
+          date: date
         });
-    }
 
-    // update the state
-    await this.setState({ data: newData });
+        // make ajax call to add new accomplishment to database
+        fetch(config.url.API_URL + "/accomplishments/", {
+          method: "PUT",
+          body: reqBody,
+          headers: {
+            "Content-type": "application/json; charset=UTF-8",
+            Authorization: this.state.token
+          }
+        })
+          .then(response => {
+            return response.json();
+          })
+          .then(json => {
+              console.log("Created new accomplishment.")
+              newData[objIndex]._id = json._id;
+              this.setState({data: newData, isSaved: true, lastSaved: json._id});
+              console.log(this.state)
+              // set the new id returned from server in the new data for the state
+              
+          }).catch(err => {
+            console.log("Error saving data!");
+            alert("Sorry, there was an error saving your data! Please contact support.");
+          });
+
+        }, 500);
+
+    }
 
     // if it's a new day, we need to update the state
     const actualCurrentDate = moment(new Date()).format("YYYY-MM-DD");

@@ -117,7 +117,7 @@ class App extends React.Component {
             return response.json();
           })
           .then(json => {
-            console.log("Updated existing accomplishment.")
+            console.log("Updated existing accomplishment by ID.")
             this.setState({data: newData, isSaved: true, lastSaved: json._id});
           })
           .catch(err => {
@@ -160,7 +160,7 @@ class App extends React.Component {
             return response.json();
           })
           .then(json => {
-              console.log("Created new accomplishment.")
+              console.log("Inserted new accomplishment or updated existing accomplishment by date.")
               // set the new id returned from server in the new data for the state
               newData[objIndex]._id = json._id;
               this.setState({data: newData, isSaved: true, lastSaved: json._id});
@@ -176,7 +176,7 @@ class App extends React.Component {
     // if it's a new day, we need to update the state
     const actualCurrentDate = moment(new Date()).format("YYYY-MM-DD");
     if (actualCurrentDate > this.state.today) {
-      console.log("It's a new day! Updating 'today' in state.");
+      console.log("It's a new day!");
       await this.setState({
         today: actualCurrentDate,
         twoWeeksAgo: moment(new Date())
@@ -186,8 +186,6 @@ class App extends React.Component {
           .add(-1, "days")
           .format("YYYY-MM-DD")
       });
-      // lazy way to reconstruct the page using new dates
-      this.componentDidMount();
     }
   }
 

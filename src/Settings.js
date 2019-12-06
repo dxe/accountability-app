@@ -20,10 +20,28 @@ const getCurrentUser = async (token) => {
   return users.currentUser;
 }
 
+const getCurrentUserSettings = async (token, userId) => {
+  const res = await fetch(config.url.API_URL + "/users/" + userId, {
+    headers: {
+      "Content-type": "application/json; charset=UTF-8",
+      Authorization: token
+    }
+  });
+  const user = await res.json(); 
+  // return current user
+  return user;
+}
+
 class Settings extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
+      firstName: '',
+      lastName: '',
+      email: '',
+      phone: '',
+      alert: false,
+      alertTime: ''
     };
   }
 
@@ -33,6 +51,18 @@ class Settings extends React.Component {
     await this.setState({ token: token });
     // if token is none, then we do this to trigger redirect to login page
     if (this.state.token === "none") return;
+
+    // get user's info from api
+    const currentUser = await getCurrentUser(this.state.token);
+    const userSettings = await getCurrentUserSettings(this.state.token, currentUser.id);
+    await this.setState({
+      firstName: userSettings.firstName,
+      lastName: userSettings.lastName,
+      email: userSettings.email,
+      phone: userSettings.phone,
+      alert: userSettings.alert,
+      alertTime: userSettings.alertTime
+    });
   }
 
   handleChangeComplete = async (color) => {
@@ -42,8 +72,7 @@ class Settings extends React.Component {
     localStorage.setItem("backgroundColor", color.hex);
     // request current user's id from api using token
     const currentUser = await getCurrentUser(this.state.token);
-    //console.log(currentUser)
-    // update backgroundColor in database
+    // update database
     await fetch(config.url.API_URL + "/users/" + currentUser.id, {
       method: "PATCH",
       body: JSON.stringify({ backgroundColor: color.hex }),
@@ -52,6 +81,59 @@ class Settings extends React.Component {
         Authorization: this.state.token
       }
     });
+  };
+
+  handleFormTextChange = async (event) => {
+
+    let updateKey = event.target.name
+    let updateValue = event.target.value
+
+    this.setState({
+      [updateKey]: updateValue
+    });
+
+    // verify user w/ api using token
+    // TODO: just use the token on backend to determine user instead
+    const currentUser = await getCurrentUser(this.state.token);
+
+    // update database
+    await fetch(config.url.API_URL + "/users/" + currentUser.id, {
+      method: "PATCH",
+      body: JSON.stringify({
+        [updateKey]: updateValue
+      }),
+      headers: {
+        "Content-type": "application/json; charset=UTF-8",
+        Authorization: this.state.token
+      }
+    });
+  };
+
+  handleFormCheckboxChange = async (event) => {
+
+    let updateKey = event.target.name
+    let updateValue = event.target.checked
+
+    this.setState({
+      [updateKey]: updateValue
+    });
+    
+    // verify user w/ api using token
+    // TODO: just use the token on backend to determine user instead
+    const currentUser = await getCurrentUser(this.state.token);
+
+    // update database
+    await fetch(config.url.API_URL + "/users/" + currentUser.id, {
+      method: "PATCH",
+      body: JSON.stringify({
+        [updateKey]: updateValue
+      }),
+      headers: {
+        "Content-type": "application/json; charset=UTF-8",
+        Authorization: this.state.token
+      }
+    });
+
   };
 
   colors = [
@@ -75,6 +157,28 @@ class Settings extends React.Component {
             onChangeComplete={ this.handleChangeComplete }
             colors={ this.colors }
           />
+          <br />
+          <label>First name:</label>
+          <input type="text" name="firstName" value={this.state.firstName} onChange={this.handleFormTextChange} />
+          <label>Last name:</label>
+          <input type="text" name="lastName" value={this.state.lastName} onChange={this.handleFormTextChange} />
+          <label>Email:</label>
+          <input type="text" name="email" value={this.state.email} onChange={this.handleFormTextChange} />
+          <label>Phone:</label>
+          <input type="text" name="phone" value={this.state.phone} onChange={this.handleFormTextChange} />
+          <label>Alert:</label>
+          <input type="checkbox" name="alert" checked={this.state.alert} onChange={this.handleFormCheckboxChange} />
+          
+          { this.state.alert ? (
+            <span className="alertSettings">
+              <label>Alert time:</label>
+              <input type="time" name="alertTime" value={this.state.alertTime} onChange={this.handleFormTextChange} />
+              <br />
+              <small>Note: Alert time must be before midnight.</small>
+              <br />
+              <br />
+            </span>
+          ) : '' }          
         </div>
       </div>
     );

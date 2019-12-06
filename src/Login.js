@@ -31,7 +31,10 @@ class Login extends React.Component {
     // store the token in local storage
     if (json.token) {
       console.log("Valid!");
-      //console.log(json);
+      // log token to console if running in dev mode
+      if (!process.env.NODE_ENV || process.env.NODE_ENV === 'development') {
+        console.log(json);
+      }
       await asyncLocalStorage.setItem("token", json.token);
       // read background color from database & set it
       asyncLocalStorage.setItem("backgroundColor", json.backgroundColor);

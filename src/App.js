@@ -41,6 +41,7 @@ class App extends React.Component {
       users: [],
       selectedUser: "",
       loggedInUser: {},
+      loggedInUserFirstName: '',
       currentHour: moment(new Date()).format('HH'),
       today: moment(new Date()).format("YYYY-MM-DD"),
       twoWeeksAgo: moment(new Date())
@@ -238,24 +239,27 @@ class App extends React.Component {
     try {
       const usersJson = await this.getUsers();
 
+      let loggedInUserFirstName = (usersJson.users.find(obj => {
+        return obj._id === usersJson.currentUser.id
+      })).firstName
+
       this.setState({
         users: usersJson.users,
         selectedUser: usersJson.currentUser.id,
-        loggedInUser: usersJson.currentUser
+        loggedInUser: usersJson.currentUser,
+        loggedInUserFirstName: loggedInUserFirstName
       });
 
       const dataJson = await this.getAccomplishments();
 
       this.setState({
         data: dataJson,
-        selectedUser: usersJson.currentUser.id,
-        loggedInUser: usersJson.currentUser,
         loading: false
       });
 
     } catch (err) {
       // if we get an error, then token is probably invalid, so just redirect to login page
-      alert("Error getting data. Please login again. If the error persists, please contact support.");
+      alert("Please login again.");
       this.setState({ token: "none" });
     }
 
@@ -283,7 +287,7 @@ class App extends React.Component {
             : this.state.currentHour >= 17 && this.state.currentHour <= 23 ? ("Good evening")
             : "Hello"
           }
-          , {this.state.loggedInUser.firstName}.
+          , {this.state.loggedInUserFirstName}.
         </p>
       ) : (
         <p></p>

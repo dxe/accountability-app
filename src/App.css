@@ -8,6 +8,13 @@
   color: white;
 }
 
+.alertSettings {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
 .nav {
   text-align: center;
   font-size: 14px;
@@ -45,6 +52,24 @@ textarea {
   border-radius: 5px;
   padding: 7px;
   resize: none;
+}
+
+input {
+  -webkit-border-radius: 5px;
+  -moz-border-radius: 5px;
+  border-radius: 5px;
+  padding: 7px;
+  resize: none;
+}
+
+input[type="time"] {
+  font-family: 'system-ui';
+  width: 100%;
+}
+
+label {
+  margin-top: 10px;
+  margin-bottom: 5px;
 }
 
 td {

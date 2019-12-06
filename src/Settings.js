@@ -5,7 +5,6 @@ import { CirclePicker } from "react-color";
 import { config } from './config'
 import { asyncLocalStorage } from './helpers'
 import { Redirect } from "react-router-dom";
-import TimeInputPolyfill from 'react-time-input-polyfill'
 
 const getCurrentUser = async (token) => {
   // get users from api
@@ -85,8 +84,8 @@ class Settings extends React.Component {
 
   handleFormTextChange = async (event) => {
 
-    let updateKey = event.target ? event.target.name : event.element.name
-    let updateValue = event.target ? event.target.value : event.value
+    let updateKey = event.target.name
+    let updateValue = event.target.value
 
     this.setState({
       [updateKey]: updateValue
@@ -136,6 +135,32 @@ class Settings extends React.Component {
 
   };
 
+  handleFormTimeChange = async (time) => {
+
+    let updateKey = 'alertTime'
+    let updateValue = time
+
+    this.setState({
+      [updateKey]: updateValue
+    });
+
+    // verify user w/ api using token
+    // TODO: just use the token on backend to determine user instead
+    const currentUser = await getCurrentUser(this.state.token);
+
+    // update database
+    await fetch(config.url.API_URL + "/users/" + currentUser.id, {
+      method: "PATCH",
+      body: JSON.stringify({
+        [updateKey]: updateValue
+      }),
+      headers: {
+        "Content-type": "application/json; charset=UTF-8",
+        Authorization: this.state.token
+      }
+    });
+  };
+
   colors = [
     "#5900b3", "#FE7DC2", "#9c27b0", "#673ab7", "#3f51b5", "#2196f3",
     "#010101", "#09A903", "#ff9800", "#393939", "#795548", "#607d8b"
@@ -172,9 +197,15 @@ class Settings extends React.Component {
           { this.state.alert ? (
             <span className="alertSettings">
               <label>Alert time:</label>
-              <TimeInputPolyfill name="alertTime" value={this.state.alertTime} onChange={this.handleFormTextChange} />
-              <br />
-              <small>Note: Alert time must be before midnight.</small>
+              <select name="alertTime" value={this.state.alertTime} onChange={this.handleFormTextChange}>
+                <option value="17:00">5:00 PM</option>
+                <option value="18:00">6:00 PM</option>
+                <option value="19:00">7:00 PM</option>
+                <option value="20:00">8:00 PM</option>
+                <option value="21:00">9:00 PM</option>
+                <option value="22:00">10:00 PM</option>
+                <option value="23:00">11:00 PM</option>
+              </select>
               <br />
               <br />
             </span>

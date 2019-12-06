@@ -60,6 +60,7 @@ input {
   border-radius: 5px;
   padding: 7px;
   resize: none;
+  border: none;
 }
 
 input[type="time"] {
@@ -129,6 +130,7 @@ td {
 .select-css option {
   font-weight: normal;
 }
+
 
 /* this is to prevent zoom on mobile devices */
 input[type="color"],

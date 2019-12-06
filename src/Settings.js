@@ -203,8 +203,17 @@ class Settings extends React.Component {
                 <option value="19:00">7:00 PM</option>
                 <option value="20:00">8:00 PM</option>
                 <option value="21:00">9:00 PM</option>
+                <option value="21:15">9:15 PM</option>
+                <option value="21:30">9:30 PM</option>
+                <option value="21:45">9:45 PM</option>
                 <option value="22:00">10:00 PM</option>
+                <option value="22:15">10:15 PM</option>
+                <option value="22:30">10:30 PM</option>
+                <option value="22:45">10:45 PM</option>
                 <option value="23:00">11:00 PM</option>
+                <option value="23:15">11:15 PM</option>
+                <option value="23:30">11:30 PM</option>
+                <option value="23:45">11:45 PM</option>
               </select>
               <br />
               <br />

@@ -5,7 +5,7 @@ import { CirclePicker } from "react-color";
 import { config } from './config'
 import { asyncLocalStorage } from './helpers'
 import { Redirect } from "react-router-dom";
-
+import TimeInputPolyfill from 'react-time-input-polyfill'
 
 const getCurrentUser = async (token) => {
   // get users from api
@@ -85,8 +85,8 @@ class Settings extends React.Component {
 
   handleFormTextChange = async (event) => {
 
-    let updateKey = event.target.name
-    let updateValue = event.target.value
+    let updateKey = event.target ? event.target.name : event.element.name
+    let updateValue = event.target ? event.target.value : event.value
 
     this.setState({
       [updateKey]: updateValue
@@ -172,7 +172,7 @@ class Settings extends React.Component {
           { this.state.alert ? (
             <span className="alertSettings">
               <label>Alert time:</label>
-              <input type="time" name="alertTime" value={this.state.alertTime} onChange={this.handleFormTextChange} />
+              <TimeInputPolyfill name="alertTime" value={this.state.alertTime} onChange={this.handleFormTextChange} />
               <br />
               <small>Note: Alert time must be before midnight.</small>
               <br />

@@ -69,9 +69,9 @@ class App extends React.Component {
       );
 
     // if date is yesterday, then only allow changes it current time is less than 9:30
-    if (moment.utc(date).format("YYYY-MM-DD") === this.state.yesterday && moment(new Date()).format('HHmm') > '0930')
+    if (moment.utc(date).format("YYYY-MM-DD") === this.state.yesterday && moment(new Date()).format('HHmm') > '1200')
       return alert(
-        "Sorry, you may not edit yesterday's accomplishments after 9:30am."
+        "Sorry, you may not edit yesterday's accomplishments after 12pm."
       );
 
     // keep the event around so our timeout callbacks can access it

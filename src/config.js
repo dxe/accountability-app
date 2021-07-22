@@ -1,6 +1,6 @@
 const prod = {
  url: {
-  API_URL: "https://api.accountability.dxe.io"
+  API_URL: "https://accountability-api.dxe.io"
  }
 };
 const dev = {

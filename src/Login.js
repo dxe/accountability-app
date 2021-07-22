@@ -16,6 +16,10 @@ class Login extends React.Component {
   }
 
   responseGoogle = async res => {
+    if (!res.profileObj) {
+      return
+    }
+
     console.log(`Thank you, ${res.profileObj.givenName}`);
 
     // pass token to our api to make sure it's a valid user

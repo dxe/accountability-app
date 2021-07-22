@@ -1,4 +1,4 @@
-Stakeholders Accountability App. Hosted on S3. Changes pusted to master are automatically deployed.
+Stakeholders Accountability App. Hosted on S3. Changes pushed to master are automatically deployed.
 
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).

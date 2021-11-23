@@ -1,4 +1,4 @@
-import React from "react";
+import React, {useEffect, useState} from "react";
 import "./App.css";
 import GoogleLogin from "react-google-login";
 import { Redirect } from "react-router-dom";
@@ -7,16 +7,11 @@ import { asyncLocalStorage } from './helpers'
 
 // manage oauth creds here: https://console.developers.google.com/apis/credentials?project=stakeholders-accountability&organizationId=351974971548
 
-class Login extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      loggedIn: false
-    };
-  }
+const Login = () => {
+  const [loggedIn, setLoggedIn] = useState(false);
 
-  responseGoogle = async res => {
-    if (!res.profileObj) {
+  const responseGoogle = async (res) => {
+    if (!res || !res.profileObj) {
       return
     }
 
@@ -44,37 +39,54 @@ class Login extends React.Component {
       asyncLocalStorage.setItem("backgroundColor", json.backgroundColor);
       document.body.style.cssText = ('background:' + json.backgroundColor + ';');
       // set state.loggedIn to redirect to main page
-      this.setState({ loggedIn: true });
+      setLoggedIn(true)
     } else {
       console.log("Invalid!");
       alert("Sorry, you are unauthorized. Please try again.");
     }
-  };
+  }
 
-  render() {
-    if (this.state.loggedIn) {
-      return <Redirect to="/" />;
+  const devLogin = () => {
+    console.log("devLogin called")
+
+    const token = {
+      "profileObj": {
+        "givenName": "Jake"
+      },
+      "tokenObj": {
+        "id_token": "123456",
+      }
     }
 
+    responseGoogle(token)
+  }
+
+  useEffect(() => {
     // clear local storage whenever login page is visited
     localStorage.removeItem("token");
+  }, [])
 
-    return (
+  if (loggedIn) {
+    return <Redirect to="/" />;
+  }
+
+  return (
       <div className="App">
         <div className="App-wrapper">
           <div id="login-wrapper">
             <GoogleLogin
-              clientId="473172367004-l02vesjv7pnj0lgi53agg5dbbjd5b9s5.apps.googleusercontent.com"
-              buttonText="Login"
-              onSuccess={this.responseGoogle}
-              onFailure={this.responseGoogle}
-              cookiePolicy={"single_host_origin"}
+                clientId="473172367004-l02vesjv7pnj0lgi53agg5dbbjd5b9s5.apps.googleusercontent.com"
+                buttonText="Login"
+                onSuccess={responseGoogle}
+                onFailure={responseGoogle}
+                cookiePolicy={"single_host_origin"}
             />
+            {process.env.NODE_ENV === 'development' && (<div onClick={devLogin}>Dev login</div>)}
           </div>
         </div>
       </div>
-    );
-  }
+  );
+
 }
 
 export default Login;

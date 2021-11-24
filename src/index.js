@@ -1,20 +1,22 @@
-import * as Sentry from '@sentry/browser';
+import * as Sentry from "@sentry/browser";
 import React from "react";
 import ReactDOM from "react-dom";
 import "./index.css";
 import App from "./App";
-import Dashboard from "./Dashboard";
-import Login from "./Login";
-import Settings from "./Settings";
-import NotFound from "./NotFound";
+import Dashboard from "./components/Dashboard";
+import Login from "./components/Login";
+import Settings from "./components/Settings";
+import NotFound from "./components/NotFound";
 import * as serviceWorker from "./serviceWorker";
 import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
 
-Sentry.init({dsn: "https://0b9bf436351f4d808715372f23bd757f@sentry.io/1817580"});
+Sentry.init({
+  dsn: "https://0b9bf436351f4d808715372f23bd757f@sentry.io/1817580"
+});
 
 // set background color from local storage
-const color = (localStorage.getItem("backgroundColor")) || "#5900b3";
-document.body.style.cssText = ('background:' + color + ';');
+const color = localStorage.getItem("backgroundColor") || "#5900b3";
+document.body.style.cssText = "background:" + color + ";";
 
 const routing = (
   <Router>

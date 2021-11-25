@@ -1,14 +1,11 @@
 import * as Sentry from "@sentry/browser";
 import React from "react";
 import ReactDOM from "react-dom";
-import "./index.css";
 import App from "./App";
-import Dashboard from "./components/Dashboard";
-import Login from "./components/Login";
-import Settings from "./components/Settings";
-import NotFound from "./components/NotFound";
 import * as serviceWorker from "./serviceWorker";
-import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
+import { BrowserRouter } from "react-router-dom";
+import "bootstrap/dist/css/bootstrap.min.css";
+import "bootstrap/dist/js/bootstrap.min.js";
 
 Sentry.init({
   dsn: "https://0b9bf436351f4d808715372f23bd757f@sentry.io/1817580"
@@ -18,19 +15,15 @@ Sentry.init({
 const color = localStorage.getItem("backgroundColor") || "#5900b3";
 document.body.style.cssText = "background:" + color + ";";
 
-const routing = (
-  <Router>
-    <Switch>
-      <Route exact path="/" component={App} />
-      <Route path="/dashboard" component={Dashboard} />
-      <Route path="/login" component={Login} />
-      <Route path="/settings" component={Settings} />
-      <Route component={NotFound} />
-    </Switch>
-  </Router>
+const app = (
+  <React.StrictMode>
+    <BrowserRouter>
+      <App />
+    </BrowserRouter>
+  </React.StrictMode>
 );
 
-ReactDOM.render(routing, document.getElementById("root"));
+ReactDOM.render(app, document.getElementById("root"));
 
 // If you want your app to work offline and load faster, you can change
 // unregister() to register() below. Note this comes with some pitfalls.

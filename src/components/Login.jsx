@@ -1,14 +1,15 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect } from "react";
 import "../App.css";
 import GoogleLogin from "react-google-login";
-import { Redirect } from "react-router-dom";
+import { Navigate } from "react-router-dom";
 import { config } from "../config";
 import { asyncLocalStorage } from "../helpers";
+import { UserContext } from "../context/UserContext";
 
 // manage oauth creds here: https://console.developers.google.com/apis/credentials?project=stakeholders-accountability&organizationId=351974971548
 
 const Login = () => {
-  const [loggedIn, setLoggedIn] = useState(false);
+  const { loggedIn, setLoggedIn, setToken } = useContext(UserContext);
 
   const responseGoogle = async res => {
     if (!res || !res.profileObj) {
@@ -35,6 +36,7 @@ const Login = () => {
         console.log(json);
       }
       await asyncLocalStorage.setItem("token", json.token);
+      setToken(json.token);
       // read background color from database & set it
       asyncLocalStorage.setItem("backgroundColor", json.backgroundColor);
       document.body.style.cssText = "background:" + json.backgroundColor + ";";
@@ -63,11 +65,13 @@ const Login = () => {
 
   useEffect(() => {
     // clear local storage whenever login page is visited
+    setLoggedIn(false);
+    setToken("");
     localStorage.removeItem("token");
-  }, []);
+  }, [setLoggedIn, setToken]);
 
   if (loggedIn) {
-    return <Redirect to="/" />;
+    return <Navigate replace to="/" />;
   }
 
   return (

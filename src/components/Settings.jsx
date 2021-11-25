@@ -1,10 +1,10 @@
-import React, { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import React, { useContext, useEffect, useState } from "react";
 import "../App.css";
 import { CirclePicker } from "react-color";
 import { config } from "../config";
-import { asyncLocalStorage } from "../helpers";
-import {Loading} from "./Loading";
+import { Loading } from "./Loading";
+import { UserContext } from "../context/UserContext";
+import { useNavigate } from "react-router-dom";
 
 const colors = [
   "#5900b3",
@@ -33,7 +33,8 @@ const Settings = () => {
     alertTime: "",
     backgroundColor: colors[0]
   });
-  const [token, setToken] = useState("none");
+  const { ready, loggedIn, token } = useContext(UserContext);
+  const navigate = useNavigate();
 
   const handleColorChange = async color => {
     setUser({ ...user, backgroundColor: color.hex });
@@ -54,7 +55,10 @@ const Settings = () => {
 
   const handleFormChange = async event => {
     let updateKey = event.target.name;
-    let updateValue = event.target.type === "checkbox" ? event.target.checked : event.target.value
+    let updateValue =
+      event.target.type === "checkbox"
+        ? event.target.checked
+        : event.target.value;
 
     setUser({ ...user, [updateKey]: updateValue });
 
@@ -72,12 +76,6 @@ const Settings = () => {
   };
 
   useEffect(() => {
-    (async () => {
-      setToken(await asyncLocalStorage.getItem("token"));
-    })();
-  }, []);
-
-  useEffect(() => {
     const getCurrentUser = async () => {
       // get users from api
       const res = await fetch(config.url.API_URL + "/users", {
@@ -91,7 +89,7 @@ const Settings = () => {
       return users.currentUser;
     };
 
-    const getCurrentUserSettings = async (token, userId) => {
+    const getCurrentUserSettings = async userId => {
       const res = await fetch(config.url.API_URL + "/users/" + userId, {
         headers: {
           "Content-type": "application/json; charset=UTF-8",
@@ -102,32 +100,34 @@ const Settings = () => {
     };
 
     (async () => {
-      if (token === "none") return;
+      if (!ready) return;
       const currentUser = await getCurrentUser();
-      setUserID(currentUser.id);
-      const userSettings = await getCurrentUserSettings(token, currentUser.id);
-      setUser(userSettings);
-      setLoading(false);
+      try {
+        setUserID(currentUser.id);
+        const userSettings = await getCurrentUserSettings(currentUser.id);
+        setUser(userSettings);
+        setLoading(false);
+      } catch (e) {
+        console.warn(e);
+        navigate("/login");
+      }
     })();
-  }, [token]);
+  }, [loggedIn, ready, navigate, token]);
 
   if (loading) {
-    return (<Loading />)
+    return <Loading />;
   }
 
   return (
-    <div className="App">
-      <div className="App-wrapper">
-        <Link to="/" className="nav">
-          Go back
-        </Link>
-        <br />
-        <CirclePicker
-          color={user.backgroundColor}
-          onChangeComplete={handleColorChange}
-          colors={colors}
-        />
-        <br />
+    <div className="App-wrapper">
+      <CirclePicker
+        color={user.backgroundColor}
+        onChangeComplete={handleColorChange}
+        colors={colors}
+      />
+      <br />
+
+      <div className="form-group settings-form-field">
         <label>First name:</label>
         <input
           type="text"
@@ -135,7 +135,11 @@ const Settings = () => {
           value={user.firstName}
           onChange={handleFormChange}
           autoComplete="off"
+          className={"form-control"}
         />
+      </div>
+
+      <div className="form-group settings-form-field">
         <label>Last name:</label>
         <input
           type="text"
@@ -143,7 +147,11 @@ const Settings = () => {
           value={user.lastName}
           onChange={handleFormChange}
           autoComplete="off"
+          className={"form-control"}
         />
+      </div>
+
+      <div className="form-group settings-form-field">
         <label>Email:</label>
         <input
           type="text"
@@ -151,7 +159,11 @@ const Settings = () => {
           value={user.email}
           onChange={handleFormChange}
           autoComplete="off"
+          className={"form-control"}
         />
+      </div>
+
+      <div className="form-group settings-form-field">
         <label>Phone:</label>
         <input
           type="text"
@@ -159,49 +171,51 @@ const Settings = () => {
           value={user.phone}
           onChange={handleFormChange}
           autoComplete="off"
+          className={"form-control"}
         />
-        <label>Alert:</label>
+      </div>
+
+      <div className="form-check settings-form-field">
         <input
           type="checkbox"
           name="alert"
           checked={user.alert}
           onChange={handleFormChange}
           autoComplete="off"
+          className={"form-check-input"}
         />
-
-        {user.alert ? (
-          <span className="alertSettings">
-            <label>Alert time:</label>
-            <select
-              name="alertTime"
-              value={user.alertTime}
-              onChange={handleFormChange}
-              autoComplete="off"
-            >
-              <option value="17:00">5:00 PM</option>
-              <option value="18:00">6:00 PM</option>
-              <option value="19:00">7:00 PM</option>
-              <option value="20:00">8:00 PM</option>
-              <option value="21:00">9:00 PM</option>
-              <option value="21:15">9:15 PM</option>
-              <option value="21:30">9:30 PM</option>
-              <option value="21:45">9:45 PM</option>
-              <option value="22:00">10:00 PM</option>
-              <option value="22:15">10:15 PM</option>
-              <option value="22:30">10:30 PM</option>
-              <option value="22:45">10:45 PM</option>
-              <option value="23:00">11:00 PM</option>
-              <option value="23:15">11:15 PM</option>
-              <option value="23:30">11:30 PM</option>
-              <option value="23:45">11:45 PM</option>
-            </select>
-            <br />
-            <br />
-          </span>
-        ) : (
-          ""
-        )}
+        <label className="form-check-label">Enable SMS alert</label>
       </div>
+
+      {user.alert && (
+        <div className="form-group settings-form-field">
+          <label htmlFor={"alertTime"}>Alert time:</label>
+          <select
+            name="alertTime"
+            value={user.alertTime}
+            onChange={handleFormChange}
+            autoComplete="off"
+            className={"form-control"}
+          >
+            <option value="17:00">5:00 PM</option>
+            <option value="18:00">6:00 PM</option>
+            <option value="19:00">7:00 PM</option>
+            <option value="20:00">8:00 PM</option>
+            <option value="21:00">9:00 PM</option>
+            <option value="21:15">9:15 PM</option>
+            <option value="21:30">9:30 PM</option>
+            <option value="21:45">9:45 PM</option>
+            <option value="22:00">10:00 PM</option>
+            <option value="22:15">10:15 PM</option>
+            <option value="22:30">10:30 PM</option>
+            <option value="22:45">10:45 PM</option>
+            <option value="23:00">11:00 PM</option>
+            <option value="23:15">11:15 PM</option>
+            <option value="23:30">11:30 PM</option>
+            <option value="23:45">11:45 PM</option>
+          </select>
+        </div>
+      )}
     </div>
   );
 };

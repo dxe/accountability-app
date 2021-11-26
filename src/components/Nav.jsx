@@ -1,9 +1,10 @@
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import React, { useContext } from "react";
 import { UserContext } from "../context/UserContext";
 
 export const Nav = () => {
   const { loggedIn } = useContext(UserContext);
+  const location = useLocation();
 
   return (
     <nav className="navbar fixed-top navbar-expand-lg navbar-light">
@@ -24,26 +25,26 @@ export const Nav = () => {
           <ul className="navbar-nav me-auto mb-2 mb-lg-0">
             {loggedIn && (
               <li className="nav-item">
-                <Link to="/" className={"nav-link"}>
+                <Link to="/" className={location.pathname === "/" ? "nav-link active" : "nav-link"}>
                   Home
                 </Link>
               </li>
             )}
             <li className="nav-item">
-              <Link to="/dashboard" className={"nav-link"}>
+              <Link to="/dashboard" className={location.pathname === "/dashboard" ? "nav-link active" : "nav-link"}>
                 Dashboard
               </Link>
             </li>
             {loggedIn && (
               <li className="nav-item">
-                <Link to="/settings" className={"nav-link"}>
+                <Link to="/settings" className={location.pathname === "/settings" ? "nav-link active" : "nav-link"}>
                   Settings
                 </Link>
               </li>
             )}
             {loggedIn && (
               <li className="nav-item">
-                <Link to="/users" className={"nav-link"}>
+                <Link to="/users" className={location.pathname === "/users" ? "nav-link active" : "nav-link"}>
                   Users
                 </Link>
               </li>

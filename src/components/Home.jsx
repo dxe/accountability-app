@@ -21,8 +21,8 @@ export const Home = () => {
   // TODO: update these variables every 5 min w/ a useEffect?
   const currentHour = moment(new Date()).format("HH");
   const today = moment(new Date()).format("YYYY-MM-DD");
-  const twoWeeksAgo = moment(new Date())
-    .add(-14, "days")
+  const sixWeeksAgo = moment(new Date())
+    .add(-6, "weeks")
     .format("YYYY-MM-DD");
 
   const handleUserChange = async id => {
@@ -36,7 +36,7 @@ export const Home = () => {
     console.log(`getting accomplishments for user ${selectedUser}`);
     const res = await fetch(
       config.url.API_URL +
-        `/accomplishments/?start_date=${twoWeeksAgo}&end_date=${today}&user=${selectedUser}`,
+        `/accomplishments/?start_date=${sixWeeksAgo}&end_date=${today}&user=${selectedUser}`,
       {
         headers: {
           "Content-type": "application/json; charset=UTF-8",
@@ -45,7 +45,7 @@ export const Home = () => {
       }
     );
     return await res.json();
-  }, [selectedUser, today, twoWeeksAgo, token]);
+  }, [selectedUser, today, sixWeeksAgo, token]);
 
   // On initial component load
   useEffect(() => {
